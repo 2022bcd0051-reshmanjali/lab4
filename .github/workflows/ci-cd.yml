@@ -42,7 +42,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/lab4-api:${{ github.run_number }} .
-
+        run: |
+            echo "Listing files..."
+            ls -la
+            docker build . -t reshma1204/lab4-api:${{ github.run_number }}
+  
       - name: Push Image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/lab4-api:${{ github.run_number }}
+        run: docker push reshma1204/lab4-api:${{ github.run_number }}
