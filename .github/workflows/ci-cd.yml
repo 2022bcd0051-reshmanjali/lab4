@@ -24,7 +24,7 @@ jobs:
           name: model-artifacts
           path: artifacts/
 
-    deploy:
+  deploy:
     needs: train
     runs-on: ubuntu-latest
 
