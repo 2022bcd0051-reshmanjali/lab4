@@ -42,5 +42,5 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/lab4-api:${{ github.run_number }} .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/lab4-api:${{ github.run_number }}
+         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/lab4-api:${{ github.run_number }} .
+         docker push ${{ secrets.DOCKERHUB_USERNAME }}/lab4-api:${{ github.run_number }}
