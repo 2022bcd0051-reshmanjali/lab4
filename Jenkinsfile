@@ -3,12 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Clone Code') {
-            steps {
-                git 'https://github.com/2022bcd0051-reshmanjali/lab4'
-            }
-        }
-
         stage('Build Image') {
             steps {
                 sh 'docker build -t 2022bcd0051-model .'
@@ -24,7 +18,7 @@ pipeline {
         stage('Print Details') {
             steps {
                 echo "Name: Reshmanjali Maddula"
-                echo "Roll No: 2022bcd0051"
+                echo "Roll No: 2022BCD0051"
             }
         }
     }
