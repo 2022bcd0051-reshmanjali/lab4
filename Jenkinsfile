@@ -9,7 +9,7 @@ pipeline {
             }
         }
 
-        stage('Run Model') {
+        stage('Run Container') {
             steps {
                 sh 'docker run -d -p 8000:8000 --name ml-container 2022bcd0051-model'
             }
@@ -23,23 +23,45 @@ pipeline {
             }
         }
 
-        stage('Valid Request Test') {
+        stage('Valid Inference Test') {
             steps {
-                sh '''
-                curl -X POST http://localhost:8000/predict \
-                -H "Content-Type: application/json" \
-                -d '{"feature1": 5, "feature2": 3}'
-                '''
+                script {
+                    def response = sh(
+                        script: '''
+                        curl -s -X POST http://localhost:8000/predict \
+                        -H "Content-Type: application/json" \
+                        -d '{"feature1": 5, "feature2": 3}'
+                        ''',
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Response: ${response}"
+
+                    if (!response.contains("prediction")) {
+                        error("Valid input failed: prediction not found")
+                    }
+                }
             }
         }
 
-        stage('Invalid Request Test') {
+        stage('Invalid Inference Test') {
             steps {
-                sh '''
-                curl -X POST http://localhost:8000/predict \
-                -H "Content-Type: application/json" \
-                -d '{"wrong": "data"}'
-                '''
+                script {
+                    def response = sh(
+                        script: '''
+                        curl -s -X POST http://localhost:8000/predict \
+                        -H "Content-Type: application/json" \
+                        -d '{"wrong": "data"}'
+                        ''',
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Error Response: ${response}"
+
+                    if (!response.toLowerCase().contains("error")) {
+                        error("Invalid input did not return expected error")
+                    }
+                }
             }
         }
 
@@ -49,12 +71,14 @@ pipeline {
                 sh 'docker rm ml-container || true'
             }
         }
+    }
 
-        stage('Print Details') {
-            steps {
-                echo "Name: Reshmanjali Maddula"
-                echo "Roll No: 2022BCD0051"
-            }
+    post {
+        success {
+            echo "Pipeline Passed ✅"
+        }
+        failure {
+            echo "Pipeline Failed ❌"
         }
     }
 }
