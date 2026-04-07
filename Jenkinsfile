@@ -11,7 +11,11 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 8000:8000 --name ml-container 2022bcd0051-model'
+            sh '''
+            docker stop ml-container || true
+            docker rm ml-container || true
+            docker run -d -p 8000:8000 --name ml-container 2022bcd0051-model
+            '''
             }
         }
 
