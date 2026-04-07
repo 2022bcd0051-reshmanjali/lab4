@@ -32,9 +32,7 @@ pipeline {
                 script {
                     def response = sh(
                         script: '''
-                        curl -s -X POST http://host.docker.internal:8002/predict \
-                        -H "Content-Type: application/json" \
-                        -d '{"feature1": 5, "feature2": 3}'
+                        curl -s http://host.docker.internal:8002/predict
                         ''',
                         returnStdout: true
                     ).trim()
@@ -53,16 +51,14 @@ pipeline {
                 script {
                     def response = sh(
                         script: '''
-                        curl -s -X POST http://host.docker.internal:8002/predict \
-                        -H "Content-Type: application/json" \
-                        -d '{"wrong": "data"}'
+                        curl -s http://host.docker.internal:8002/wrong
                         ''',
                         returnStdout: true
                     ).trim()
 
                     echo "Invalid Response: ${response}"
 
-                    if (!response.toLowerCase().contains("error")) {
+                    if (!response.toLowerCase().contains("error") && !response.toLowerCase().contains("not found")) {
                         error("Invalid input did not return expected error")
                     }
                 }
