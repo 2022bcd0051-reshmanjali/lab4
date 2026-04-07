@@ -11,11 +11,11 @@ pipeline {
 
         stage('Run Container') {
             steps {
-            sh '''
-            docker stop ml-container || true
-            docker rm ml-container || true
-            docker run -d -p 8000:8000 --name ml-container 2022bcd0051-model
-            '''
+                sh '''
+                docker stop ml-container || true
+                docker rm ml-container || true
+                docker run -d -p 8002:8000 --name ml-container 2022bcd0051-model
+                '''
             }
         }
 
@@ -32,14 +32,14 @@ pipeline {
                 script {
                     def response = sh(
                         script: '''
-                        curl -s -X POST http://localhost:8000/predict \
+                        curl -s -X POST http://localhost:8002/predict \
                         -H "Content-Type: application/json" \
                         -d '{"feature1": 5, "feature2": 3}'
                         ''',
                         returnStdout: true
                     ).trim()
 
-                    echo "Response: ${response}"
+                    echo "Valid Response: ${response}"
 
                     if (!response.contains("prediction")) {
                         error("Valid input failed: prediction not found")
@@ -53,14 +53,14 @@ pipeline {
                 script {
                     def response = sh(
                         script: '''
-                        curl -s -X POST http://localhost:8000/predict \
+                        curl -s -X POST http://localhost:8002/predict \
                         -H "Content-Type: application/json" \
                         -d '{"wrong": "data"}'
                         ''',
                         returnStdout: true
                     ).trim()
 
-                    echo "Error Response: ${response}"
+                    echo "Invalid Response: ${response}"
 
                     if (!response.toLowerCase().contains("error")) {
                         error("Invalid input did not return expected error")
@@ -71,8 +71,10 @@ pipeline {
 
         stage('Stop Container') {
             steps {
-                sh 'docker stop ml-container || true'
-                sh 'docker rm ml-container || true'
+                sh '''
+                docker stop ml-container || true
+                docker rm ml-container || true
+                '''
             }
         }
     }
