@@ -39,7 +39,7 @@ pipeline {
 
                     echo "Valid Response: ${response}"
 
-                    if (!response.contains("wine_quality")) {
+                    if (!response.contains("prediction")) {
                         error("Valid input failed: prediction not found")
                     }
                 }
