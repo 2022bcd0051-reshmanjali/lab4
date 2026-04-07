@@ -3,9 +3,9 @@ pipeline {
 
     stages {
 
-        stage('Pull Image') {
+        stage('Build Image') {
             steps {
-                sh 'docker pull 2022bcd0051-model'
+                sh 'docker build -t 2022bcd0051-model .'
             }
         }
 
